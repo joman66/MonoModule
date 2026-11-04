@@ -1,8 +1,9 @@
 # Changelog
 
-## Unreleased
+## 0.2.1-alpha
 
 - With MIDI sync, Live is the only transport: Play, Stop and Shift+Play do nothing in the module (the screen says "PLAY FOLLOWS LIVE"), on the Push and on the web page. Pressing Play in a module used to stop it alone and restart it at its own position, so two modules drifted apart. Start and stop Live instead; the module follows. With internal sync Play and Stop work as before.
+- Reads the format Live negotiated on the loopback card with `alsapcm.ReadHWParams` from `core`, not a private copy. Same behavior.
 
 ## 0.2.0-alpha
 
