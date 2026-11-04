@@ -228,6 +228,9 @@ func (e *Engine) setPatternLocked(n int) {
 func (e *Engine) Play() {
 	e.mu.Lock()
 	defer e.mu.Unlock()
+	if e.sync == SyncMIDI {
+		return
+	}
 	e.startLocked()
 }
 
@@ -255,6 +258,10 @@ func (e *Engine) startLocked() {
 // Stop halts the sequencer. Notes already sounding are released.
 func (e *Engine) Stop() {
 	e.mu.Lock()
+	if e.sync == SyncMIDI {
+		e.mu.Unlock()
+		return
+	}
 	e.stopLocked()
 	e.mu.Unlock()
 }
@@ -278,12 +285,22 @@ func (e *Engine) stopLocked() {
 func (e *Engine) TogglePlay() {
 	e.mu.Lock()
 	defer e.mu.Unlock()
+	if e.sync == SyncMIDI {
+		return
+	}
 	if e.playing {
 		e.stopLocked()
 	} else {
 		e.startLocked()
 	}
 }
+
+// LocalTransport reports whether Play and Stop work from the module. With MIDI
+// sync Live is the only transport: the module starts, stops and finds its place
+// with Live (Follower, MIDI Start/Stop). A Play or Stop pressed here would only
+// put it out of step with Live and with other modules, so Play, Stop and
+// TogglePlay do nothing then.
+func (e *Engine) LocalTransport() bool { e.mu.Lock(); defer e.mu.Unlock(); return e.sync != SyncMIDI }
 
 // Playing reports whether the sequencer runs.
 func (e *Engine) Playing() bool { e.mu.Lock(); defer e.mu.Unlock(); return e.playing }
