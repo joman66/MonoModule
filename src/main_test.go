@@ -14,8 +14,8 @@ import (
 
 	"github.com/federico-pepe/ableton-push-hack/core/sse"
 
+	"github.com/federico-pepe/ableton-push-hack/core/alsapcm"
 	"monomodule/engine"
-	"monomodule/hwparams"
 	"monomodule/outmix"
 	"monomodule/store"
 	"monomodule/ui"
@@ -122,7 +122,7 @@ func TestAudioPath(t *testing.T) {
 	}
 	a := newTestApp(t)
 	a.eng.Play()
-	hp := hwparams.Params{Channels: 8, Rate: 48000, Period: 512, Buffer: 2048}
+	hp := alsapcm.HWParams{Channels: 8, Rate: 48000, Period: 512, Buffer: 2048}
 	a.cfg.ChannelOffset = 2
 	a.cfg.OutputMode = outmix.Stereo
 	a.storeMirror(a.cfg)
@@ -158,7 +158,7 @@ func TestMonoOutputSwitchesLive(t *testing.T) {
 	}
 	a := newTestApp(t)
 	a.eng.Play()
-	s, err := a.startSession(hwparams.Params{Channels: 8, Rate: 48000, Period: 512, Buffer: 2048}, "hw:fake")
+	s, err := a.startSession(alsapcm.HWParams{Channels: 8, Rate: 48000, Period: 512, Buffer: 2048}, "hw:fake")
 	if err != nil {
 		t.Fatal(err)
 	}
