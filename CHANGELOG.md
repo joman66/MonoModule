@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- With MIDI sync, Live is the only transport: Play, Stop and Shift+Play do nothing in the module (the screen says "PLAY FOLLOWS LIVE"), on the Push and on the web page. Pressing Play in a module used to stop it alone and restart it at its own position, so two modules drifted apart. Start and stop Live instead; the module follows. With internal sync Play and Stop work as before.
+
 ## 0.2.0-alpha
 
 - Release workflow (`.github/workflows/release.yml`): a `v*` tag tests, builds (Docker, cgo, linux/amd64), packages `monomodule.tar.gz` and publishes a GitHub Release, then updates `release.json`. Every push and pull request is also tested and built, and the package is kept as a workflow artifact.

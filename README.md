@@ -19,7 +19,7 @@ Everything that can run without a Push has been tested here (engine, sequencer, 
 - **Arpeggiator** per track (up, down, up/down, down/up, random; NORM, LATCH, SID play modes).
 - **128 kits, 24 songs**, 32 user waveforms (WAV import).
 - **Push front panel** on a green LCD look-alike, and a **web page** with the same functions plus a piano keyboard.
-- MIDI in: channel n plays track n, CCs 16-71 map a track's 56 parameters, clock/start/stop sync; with sync on MIDI it also joins when Live is already playing, and stops when Live stops (read from the PushHack Remote Script).
+- MIDI in: channel n plays track n, CCs 16-71 map a track's 56 parameters, clock/start/stop sync (with MIDI sync Live is the only transport: Play and Stop in the module do nothing); with sync on MIDI it also joins when Live is already playing, and stops when Live stops (read from the PushHack Remote Script).
 
 ## Requirements
 
