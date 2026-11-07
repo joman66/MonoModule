@@ -77,7 +77,9 @@ Same functions with a mouse: transport, six machine selectors, parameter sliders
 
 ## Audio output
 
-MonoModule sends its audio to the audio mixer of push-audio-loopback when it runs, so it can play together with other audio hacks such as Braids. In the web page's *System* tab, choose the channel pair; the mixer remembers it. In Live, enable that pair on the input of the Push Hack Virtual Audio card and give an audio track that input (the *Create the audio and MIDI tracks in Live* button does this; it never changes your pair). The mixer plays stereo pairs, so the *Output* mode and the device list are off while it runs.
+By default push-audio-loopback sends MonoModule to Live over Ableton Link Audio. In Live, turn on Link and Link Audio, give an audio track the input type *PushHack*, pick the channel *MonoModule* and set Monitor to In. The channel pair below applies to the virtual card mode only. The *Create the audio and MIDI tracks in Live* button makes its audio track on the virtual card, so in Link mode set the input by hand. After a restart of push-audio-loopback, press play in Live to bring the sequencer back in time.
+
+Virtual card mode: MonoModule sends its audio to the audio mixer of push-audio-loopback when it runs, so it can play together with other audio hacks such as Braids. In the web page's *System* tab, choose the channel pair; the mixer remembers it. In Live, enable that pair on the input of the Push Hack Virtual Audio card and give an audio track that input (the *Create the audio and MIDI tracks in Live* button does this; it never changes your pair). The mixer plays stereo pairs, so the *Output* mode and the device list are off while it runs.
 
 Without the mixer, MonoModule writes to the card itself: choose the device, the stereo or mono output and the channel (or pair). Only one audio hack can do this at a time. MonoModule switches between the two modes by itself.
 
