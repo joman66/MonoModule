@@ -23,9 +23,24 @@ Everything that can run without a Push has been tested here (engine, sequencer, 
 
 ## Requirements
 
-[push-audio-loopback](https://github.com/federico-pepe/ableton-push-hack) (the virtual audio card), push-manager and push-display, and the PushHack Remote Script in Live (to create the tracks). For the audio mixer below: push-audio-loopback 0.2.0-alpha or later.
+[push-audio-loopback](https://github.com/federico-pepe/push-hack-audio-loopback) (it sends the audio to Live over Ableton Link Audio, or through a virtual audio card), push-manager and push-display, and the PushHack Remote Script in Live (to create the tracks). For Link Audio: push-audio-loopback 0.3.0-alpha or later. For the audio mixer below: 0.2.0-alpha or later.
+
+## Link Audio (default)
+
+push-audio-loopback 0.3.0-alpha sends the audio of MonoModule to Live over Ableton Link Audio. This is its default.
+MonoModule is then its own Link channel, named `MonoModule`, and Live keeps the sound card of the Push as its output.
+
+1. In Live, turn on **Link** and **Link Audio**. Live switches them off after a restart.
+2. Give an audio track the input type **PushHack**, pick the channel `MonoModule`, and set Monitor to In.
+3. The Audio page of push-audio-loopback (Push Hack menu, *Audio*) switches between Link and the virtual card.
+
+- The channel pair on the web page does not matter in Link mode.
+- The *Create tracks in Live* button still makes the audio track on the virtual card. In Link mode, set the input of that track by hand as in step 2.
+- After a restart of push-audio-loopback, MonoModule can drift against the clock of Live. Press play in Live and it is back in time. This is a known issue.
 
 ## Audio mixer
+
+This section is about the virtual card mode.
 
 MonoModule plays through the audio mixer of **push-audio-loopback** when it runs. The mixer adds the audio of all audio hacks, so MonoModule and Braids can play at the same time. The mixer owns the card and plays stereo pairs: the web page's *System* tab then offers the channel pair (the mixer remembers it), and the *Output* (stereo/mono) and device lists are off. Without the mixer, MonoModule writes to the card itself, with stereo or mono output and any device, and only one audio hack can do this at a time. It switches by itself when the mixer starts or stops.
 

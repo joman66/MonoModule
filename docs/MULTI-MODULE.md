@@ -1,15 +1,26 @@
-# Sharing the virtual audio card
+# Sharing the audio output
 
-- Give every module its own channel or pair: for example MachineModule stereo 1/2, MonoModule mono 3. Two modules on the same channel sum in Live.
-- Module names are unique: audio track `MonoModule`, MIDI track `MonoModule MIDI`, MIDI port `MonoModule MIDI In`.
-- Enable each input in Live (Push audio preferences > Devices > Push Hack Virtual Audio); only enabled inputs are offered. In Live a stereo pair is named "3/4", a mono input "3" (not seen on a Push by this project).
-- MonoModule opens the PCM with the channel count, rate and period Live negotiated and writes only its own channel(s).
+Several audio hacks (MachineModule, MonoModule, Braids) play at the same time through push-audio-loopback.
 
-## Untested risk
+## Link Audio (default)
 
-Every module opens `hw:PHVAudio,1,0`. The Loopback driver pairs playback sub-stream N with capture sub-stream N and Live reads sub-stream 0, so a second module may land on a silent sub-stream or be refused. **This has not been tested with two modules.** Check with both running:
+- Each hack is its own Link channel, named after the hack: `MachineModule`, `MonoModule`, `Braids`. In Live, give an audio track the input type **PushHack** and pick the channel.
+- Live keeps the sound card of the Push as its output. Turn on Link and Link Audio in Live. Live switches them off after a restart.
+- No channel pair is needed. The pair on the web page applies to the virtual card mode only.
 
-    cat /proc/asound/PHVAudio/pcm1p/sub*/status
-    cat /proc/asound/PHVAudio/pcm0c/sub*/hw_params
+## Virtual card mode
 
-If only one reaches Live, the likely fix is ALSA dmix on the single stream (all modules open a dmix PCM whose slave is `hw:PHVAudio,1,0,0`, same ipc_key, slave channels/rate/period matching Live's); the `pcm_device` setting already accepts another device string. Record the result here.
+- push-audio-loopback adds the audio of all hacks and writes the card. Give every module its own pair, for example MachineModule 1/2 and MonoModule 3/4. Two modules on the same pair sum in Live.
+- Enable each input in Live (Push audio preferences > Devices > Push Hack Virtual Audio). Only enabled inputs are offered.
+
+## Names
+
+Module names are unique: audio track `MonoModule`, MIDI track `MonoModule MIDI`, MIDI port `MonoModule MIDI In`.
+
+## Checked
+
+MachineModule, MonoModule and Braids played together, in both modes, on a Push 3 (2026-11-07). The older text about dmix is not needed: the mixer owns the card, and the hacks do not open it.
+
+## Known issue
+
+After a restart of push-audio-loopback the hacks can drift against the clock of Live. Press play in Live.
