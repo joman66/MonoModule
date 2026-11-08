@@ -148,8 +148,15 @@ func EnsureTracks(call Caller, offset int, mono bool) (Result, error) {
 		return res, Friendly("audio track", err)
 	}
 	res.Lines = append(res.Lines, line(AudioTrack, created(data)))
+	return ensureMIDI(call, res)
+}
 
-	data, err = call("track", "ensure", map[string]any{
+// EnsureMIDITrack makes only the MIDI track. Link mode uses it: the audio
+// track there takes the PushHack input, which the user sets in Live.
+func EnsureMIDITrack(call Caller) (Result, error) { return ensureMIDI(call, Result{}) }
+
+func ensureMIDI(call Caller, res Result) (Result, error) {
+	data, err := call("track", "ensure", map[string]any{
 		"kind": "midi", "name": MIDITrack,
 		"input_type": "All Ins", "output_type": MIDIPort,
 	})

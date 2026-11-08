@@ -24,6 +24,7 @@ select,input[type=number],input[type=text]{background:var(--panel);border:1px so
 header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
 h1{font-size:17px;margin:0 8px 0 0;letter-spacing:.08em}
 .lcd{background:var(--lcd);color:var(--lcdfg);font-family:var(--mono);padding:4px 10px;border-radius:4px;white-space:nowrap}
+[hidden]{display:none!important}
 .meter{width:90px;height:10px;background:var(--panel2);border-radius:5px;overflow:hidden}
 .meter i{display:block;height:100%;width:0;background:var(--acc)}
 main{padding:12px 16px 120px;max-width:1280px;margin:0 auto}
@@ -411,20 +412,20 @@ function viewWaves(v) {
 function liveInput(mode, off) { return mode === "mono" ? String(off + 1) : (off + 1) + "/" + (off + 2); }
 function viewSys(v) {
   const c = S.config;
-  v.innerHTML = `<div class="panel"><h2>Audio output</h2><div class="flex">
-    <label>Output <select id="omode"><option value="stereo" ${c.output_mode !== "mono" ? "selected" : ""}>Stereo</option><option value="mono" ${c.output_mode === "mono" ? "selected" : ""}>Mono</option></select></label>
-    <label><span id="chlab"></span> <select id="coff"></select></label>
-    <span class="lcd" id="livein"></span>
+  v.innerHTML = `<div class="panel"><h2 id="audh">Audio output</h2><div class="flex">
+    <label class="aud">Output <select id="omode"><option value="stereo" ${c.output_mode !== "mono" ? "selected" : ""}>Stereo</option><option value="mono" ${c.output_mode === "mono" ? "selected" : ""}>Mono</option></select></label>
+    <label class="aud"><span id="chlab"></span> <select id="coff"></select></label>
+    <span class="lcd aud" id="livein"></span>
     <label>MIDI base channel <select id="cmid"><option value="-1" ${c.midi_channel < 0 ? "selected" : ""}>1 (default)</option>${[...Array(16)].map((_, i) => `<option value="${i}" ${c.midi_channel === i ? "selected" : ""}>${i + 1}</option>`).join("")}</select></label>
-    <label>Audio output device <select id="cpcm"></select></label>
+    <label class="aud">Audio output device <select id="cpcm"></select></label>
     <button id="csave">Apply</button></div>
-    <p class="note" id="busnote"></p>
-    <p class="note">Everything else on the card stays silent, so several modules can share it on different channels. Then set the Live track's input to the name shown, or use the button below.
-    Track n listens on MIDI channel (base + n - 1). CCs 16-71 on a track's channel set its parameters; on the base channel CC 112 is master volume, 113 tempo, 114 mute all.</p></div>
-  <div class="panel"><h2>Ableton Live</h2><button id="ltr">Create the audio and MIDI tracks in Live</button><pre id="lres" class="note"></pre></div>
+    <p class="note aud" id="busnote"></p>
+    <p class="note aud">Everything else on the card stays silent, so several modules can share it on different channels. Then set the Live track's input to the name shown, or use the button below.</p>
+    <p class="note">Track n listens on MIDI channel (base + n - 1). CCs 16-71 on a track's channel set its parameters; on the base channel CC 112 is master volume, 113 tempo, 114 mute all.</p></div>
+  <div class="panel"><h2>Ableton Live</h2><button id="ltr">Create the audio and MIDI tracks in Live</button><p class="note" id="lnote" hidden>Audio: MonoModule sends its sound to Live over Link Audio. In Live, turn on Link and Link Audio, then give an audio track the input PushHack and pick the MonoModule channel. No other audio setting is needed. The button makes the MIDI track that plays MonoModule.</p><pre id="lres" class="note"></pre></div>
   <div class="panel"><h2>Project</h2><div class="flex"><a href="/api/project" download="monomodule-project.json"><button>Download project</button></a>
     <label>Restore <input type="file" id="pup" accept=".json"></label></div></div>`;
-  let bus = !!c.bus, off = c.channel_offset;
+  let bus = !!c.bus, link = !!c.link, off = c.channel_offset;
   const cap = () => {
     const mono = !bus && $("#omode").value === "mono";
     $("#chlab").textContent = mono ? "Channel" : "Channel pair";
@@ -434,6 +435,11 @@ function viewSys(v) {
   const loadAudio = async () => {
     const A = await (await fetch("/api/audio?mode=" + $("#omode").value)).json();
     bus = A.bus;
+    link = !!A.link;
+    document.querySelectorAll(".aud").forEach(e => e.hidden = link);
+    $("#audh").textContent = link ? "MIDI" : "Audio output";
+    $("#lnote").hidden = !link;
+    $("#ltr").textContent = link ? "Create the MIDI track in Live" : "Create the audio and MIDI tracks in Live";
     for (const [id, list] of [["cpcm", A.devices], ["coff", A.channels]]) {
       const el = $("#" + id); el.innerHTML = "";
       list.forEach(o => { const e = new Option(o.label, o.value); e.selected = o.current; el.add(e); });
@@ -449,7 +455,8 @@ function viewSys(v) {
   $("#omode").onchange = () => { loadAudio().catch(() => {}); }; $("#coff").onchange = cap;
   loadAudio().catch(() => {});
   $("#csave").onclick = () => {
-    const q = { channel_offset: +$("#coff").value, midi_channel: +$("#cmid").value };
+    const q = { midi_channel: +$("#cmid").value };
+    if (!link) q.channel_offset = +$("#coff").value;
     if (!bus) { q.output_mode = $("#omode").value; q.pcm_device = $("#cpcm").value; }
     post("config", q);
   };
