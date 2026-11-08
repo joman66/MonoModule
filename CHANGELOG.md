@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.2-alpha - 2026-11-08
+
+- In Link mode the Config tab hides every audio setting (output mode, channel pair, "Live input", output device), because Link Audio needs none. The tab shows what to do in Live: turn on Link and Link Audio, give an audio track the input `PushHack`. The button now reads *Create the MIDI track in Live* and makes only the MIDI track (`livelink.EnsureMIDITrack`). Without Link nothing changes. Uses `audiobus.LinkProbe` from `core/v0.5.6`.
+
 ## 0.2.1-alpha
 
 - With MIDI sync, Live is the only transport: Play, Stop and Shift+Play do nothing in the module (the screen says "PLAY FOLLOWS LIVE"), on the Push and on the web page. Pressing Play in a module used to stop it alone and restart it at its own position, so two modules drifted apart. Start and stop Live instead; the module follows. With internal sync Play and Stop work as before.

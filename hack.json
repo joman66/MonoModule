@@ -2,7 +2,7 @@
   "id": "monomodule",
   "name": "MonoModule",
   "description": "A six-voice synth in the style of the Elektron Monomachine SFX-60 MKII, for Push 3. Six tracks with 22 machines (GND, SWAVE, SID, VO, FM+, DPRO, FX), a cascaded high-pass/low-pass filter with envelope, three LFOs per voice, per-track EQ, sample-rate reduction and delay, a pitched step sequencer with parameter locks, slide and swing, POLY mode, arpeggiator, kits, patterns and songs. An app of Push Hack Home (Shift + Help): its screen, pads and buttons work like the hardware's. The web page edits sounds and the sequence, loads WAV waveforms and creates its tracks in Live. Plays through push-audio-loopback's audio mixer (so other audio hacks can play at the same time), or into its virtual card when no mixer runs, and takes notes, CCs and clock on the MIDI port MonoModule MIDI In. Needs push-audio-loopback, push-manager + push-display, and the PushHack Remote Script (for the tracks). Not affiliated with Elektron.",
-  "version": "0.2.1-alpha",
+  "version": "0.2.2-alpha",
   "author": "joman66",
   "binary": "monomodule",
   "port": 7712,

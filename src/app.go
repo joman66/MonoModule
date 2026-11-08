@@ -39,6 +39,16 @@ type app struct {
 	// push3 is where Push 3's Live Port is; its client number moves.
 	push3 alsaseq.Push3
 	focus atomic.Bool // MonoModule owns the Push surface
+
+	linkOnce sync.Once
+	linkP    *audiobus.LinkProbe
+}
+
+// linkMode says the mixer sends audio to Live over Link. Then the card input
+// the Create tracks button sets is wrong, so the page hides the button.
+func (a *app) linkMode() bool {
+	a.linkOnce.Do(func() { a.linkP = audiobus.NewLinkProbe() })
+	return a.busMode.Load() && a.linkP.Link()
 }
 
 func (a *app) config() store.Config {

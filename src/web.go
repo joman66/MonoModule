@@ -122,7 +122,7 @@ func (w *webServer) state() map[string]any {
 		"waves": waves, "waveUsed": used, "waveTotal": total,
 		"imports": append([]string{}, a.st.ImportFiles()...),
 		"config": map[string]any{"pcm_device": cfg.PCMDevice, "output_mode": cfg.OutputMode, "channel_offset": a.effectivePair(),
-			"bus": a.busMode.Load(), "midi_channel": cfg.MidiChannel},
+			"bus": a.busMode.Load(), "link": a.linkMode(), "midi_channel": cfg.MidiChannel},
 	}
 }
 
@@ -632,11 +632,18 @@ func (w *webServer) routes() http.Handler {
 			"devices":  audioout.Devices(devices, cfg.PCMDevice),
 			"channels": audioout.Channels(int(a.channels.Load()), mono, a.effectivePair()),
 			"bus":      bus,
+			"link":     a.linkMode(),
 		})
 	})
 	mux.HandleFunc("POST /api/live/tracks", func(rw http.ResponseWriter, r *http.Request) {
-		mono := a.config().OutputMode == outmix.Mono && !a.busMode.Load()
-		res, err := livelink.EnsureTracks(livelink.Call, a.effectivePair(), mono)
+		var res livelink.Result
+		var err error
+		if a.linkMode() {
+			res, err = livelink.EnsureMIDITrack(livelink.Call)
+		} else {
+			mono := a.config().OutputMode == outmix.Mono && !a.busMode.Load()
+			res, err = livelink.EnsureTracks(livelink.Call, a.effectivePair(), mono)
+		}
 		if err != nil {
 			bad(rw, 502, err)
 			return

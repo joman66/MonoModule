@@ -51,6 +51,20 @@ func TestEnsureMakesAudioAndMIDITracks(t *testing.T) {
 	}
 }
 
+func TestEnsureMIDITrackOnly(t *testing.T) {
+	var kinds []string
+	call := func(ns, cmd string, args map[string]any) (json.RawMessage, error) {
+		if cmd == "ensure" {
+			kinds = append(kinds, args["kind"].(string))
+		}
+		return json.RawMessage(`{"track":1,"created":true}`), nil
+	}
+	res, err := EnsureMIDITrack(call)
+	if err != nil || len(kinds) != 1 || kinds[0] != "midi" || len(res.Lines) < 2 {
+		t.Fatalf("%v %v %v", err, kinds, res.Lines)
+	}
+}
+
 func TestEnsureReportsMissingPair(t *testing.T) {
 	call := func(ns, cmd string, args map[string]any) (json.RawMessage, error) {
 		return nil, &Error{Code: "bad_routing", Data: json.RawMessage(`{"what":"channel","options":["1/2","3/4"]}`)}
